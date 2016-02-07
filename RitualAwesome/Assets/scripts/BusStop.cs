@@ -58,7 +58,7 @@ public class BusStop : MonoBehaviour
 	void OnCollisionEnter2D (Collision2D other)
 	{
 		if (other.gameObject.tag == "BusFrontCol") {
-			Console.Log ("Entered");
+			//Console.Log ("Entered");
 			entered = true;
 		} 
 	}
@@ -66,7 +66,7 @@ public class BusStop : MonoBehaviour
 	void OnCollisionExit2D (Collision2D other)
 	{
 		if (other.gameObject.tag == "BusFrontCol") {
-			Console.Log ("Exited");
+			//Console.Log ("Exited");
 			entered = false;
 		} 
 	}
@@ -74,7 +74,7 @@ public class BusStop : MonoBehaviour
 	void OnCollisionStay2D (Collision2D other)
 	{
 		if (other.gameObject.tag == "BusFrontCol") {
-			Console.Log ("Stay");
+			//Console.Log ("Stay");
 			entered = true;
 		} 
 	}

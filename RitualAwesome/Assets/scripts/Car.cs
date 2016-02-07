@@ -18,10 +18,11 @@ public class Car : MonoBehaviour
 	void Update ()
 	{
 		//set road max speed
-		if (speed >= 9f) {
-			speed = 9f;
+		if (speed >= 5f) {
+			speed = 5f;
 		}
 		if (!carBehindBus) {
+			//Console.Log ("Car Moving");
 			if (transform.position.y < 3) {
 				speed += 2f * Time.deltaTime;
 			} else {
@@ -65,11 +66,12 @@ public class Car : MonoBehaviour
 			Console.Log ("Car behind another car");
 			carBehindBus = true;
 			speed = other.gameObject.GetComponent<Car> ().speed;	
-		} else if (other.gameObject.tag == "BusBackCol") {
+		} /*else if (other.gameObject.tag == "BusBackCol") {
 			Console.Log ("Car is behind the truck honking");
 			carBehindBus = true;
 			speed = GameManager.Instance.RoadSpeed;	
-		} else if (other.gameObject.tag == "BusFrontCol") {
+		}*/
+		else if (other.gameObject.tag == "BusFrontCol") {
 			Console.Log ("Bus hit car");
 			GameManager.Instance.flyingTextAnim ();
 			GameManager.Instance.source_LoseCoin.Play ();
@@ -79,21 +81,38 @@ public class Car : MonoBehaviour
 		} 
 	}
 
+	void OnTriggerStay2D (Collider2D other)
+	{
+		if (other.gameObject.tag == "BusBackCol") {
+			Console.Log ("Car behind bus");
+			carBehindBus = true;
+			Console.Log ("carBehindBus" + carBehindBus);
+			
+			speed = GameManager.Instance.RoadSpeed - 1;	
+		} 
+	}
+
 	IEnumerator StopCar ()
 	{
 		yield return new WaitForSeconds (1f);
 		speed = 0;
 	}
 
-	void OnCollisionExit2D (Collision2D other)
+	void OnTriggerExit2D (Collider2D other)
 	{
-		if (other.gameObject.tag == "BusBackCol" || other.gameObject.tag == "CarBackCol") {
+		if (other.gameObject.tag == "BusBackCol") {
 			Console.Log ("bus has moved");
 			carBehindBus = false;
 		} 
 	}
 
-
+	void OnCollisionExit2D (Collision2D other)
+	{
+		if (other.gameObject.tag == "CarBackCol") {
+			Console.Log ("bus has moved");
+			carBehindBus = false;
+		} 
+	}
 
 
 
