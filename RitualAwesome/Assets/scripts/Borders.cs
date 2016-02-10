@@ -6,6 +6,11 @@ public class Borders : MonoBehaviour
 
 	private float reduceMoneyTimer;
 
+	void Start ()
+	{
+		Console.Log ("checkGIT");
+	}
+
 	void OnCollisionStay2D (Collision2D other)
 	{
 		if (other.gameObject.tag == "BusFrontCol") {
@@ -31,7 +36,6 @@ public class Borders : MonoBehaviour
 			//other.gameObject.GetComponent<Car> ().RemoveCar ();
 		}
 	}
-
     void Update()
     {
         Debug.Log("Vivek ka function");
