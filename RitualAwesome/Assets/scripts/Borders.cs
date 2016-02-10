@@ -32,5 +32,8 @@ public class Borders : MonoBehaviour
 		}
 	}
 
-
+    void Update()
+    {
+        Debug.Log("Vivek ka function");
+    }
 }
