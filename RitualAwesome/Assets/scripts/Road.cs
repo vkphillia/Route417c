@@ -16,6 +16,9 @@ public class Road : MonoBehaviour
 	private Transform myPooledBusStop;
 	private BusStop busStop_Obj;
 
+	//Car Spawning
+	private Transform myPooledCar;
+	private Car car_Obj;
 
 
 	//sprites
@@ -40,7 +43,7 @@ public class Road : MonoBehaviour
 					SpawnNewBusStop ();
 				}
 			}
-			GameManager.Instance.SpawnNewCar ();
+			SpawnNewCar ();
 		}
 	}
 	
@@ -105,7 +108,25 @@ public class Road : MonoBehaviour
 	}
 
 
-
-
-
+	public void SpawnNewCar ()
+	{
+		if (GameManager.Instance.CurrentState == GameState.Playing) {
+			myPooledCar = GameObjectPool.GetPool ("CarPool").GetInstance ();
+			car_Obj = myPooledCar.GetComponent<Car> ();
+			int randomSideCar = Random.Range (0, 4);
+			if (randomSideCar == 0) {
+				car_Obj.transform.position = new Vector3 (0.7f, 7, -3);
+				car_Obj.speed = 0;
+			} else if (randomSideCar == 1) {
+				car_Obj.transform.position = new Vector3 (-0.6f, 7, -3);
+				car_Obj.speed = 0;
+			} else if (randomSideCar == 2) {
+				car_Obj.transform.position = new Vector3 (0.7f, -7, -3);
+				car_Obj.speed = 0;
+			} else if (randomSideCar == 3) {
+				car_Obj.transform.position = new Vector3 (-0.6f, -7, -3);
+				car_Obj.speed = 0;
+			}
+		}
+	}
 }

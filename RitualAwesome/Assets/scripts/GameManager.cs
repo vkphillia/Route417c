@@ -4,18 +4,21 @@ using UnityEngine.UI;
 
 public enum GameState
 {
-	MainMenu,
 	Playing,
 	GameOver,
 	Paused,
 	DayOver
-    
 }
 ;
 
+public delegate void CrazyModeEvent ();
+public delegate void DayEndEvent (bool objectiveStatus);
 
 public class GameManager : MonoBehaviour
 {
+	public static event CrazyModeEvent HideHUD;
+	public static event DayEndEvent ShowDayEnd;
+	
 	//Static Singleton Instance
 	public static GameManager _Instance = null;
 		
@@ -32,11 +35,12 @@ public class GameManager : MonoBehaviour
 	//GameManager Stuff
 	public GameState CurrentState;
 
-	//Road spawning
+	//Road spawning stuff
 	private Transform myPooledRoad;
 	private Road road_Obj;
-	public float RoadSpeed ;
-	
+	public float RoadSpeed;
+
+
 	//Player Stuff
 	public int Money;
 	public Text MoneyCounter;
@@ -56,15 +60,9 @@ public class GameManager : MonoBehaviour
 	public bool crazyStarted2;
 	public bool crazyStarted3;
 
-	public Text hudDayCount;
-
-	public Text hudTimeText;
-	public GameObject HUD;
-	public GameObject CreditsAnim ;
+	public GameObject CreditsAnim;
 	public GameObject DayOverBG;
-	public Text DayOverText;
-	public string[] DayOverTexts_Good;
-	public string[] DayOverTexts_Bad;
+	private bool ObjectiveComplete;
 
 	//sounds
 	public AudioSource source_CityBGSound;
@@ -80,9 +78,6 @@ public class GameManager : MonoBehaviour
 	public string[] ThoughtBubbleTextArr4;
 
 
-	//Car Spawning
-	private Transform myPooledCar;
-	private Car car_Obj;
 
 	//Tutorial
 	[HideInInspector]
@@ -92,7 +87,7 @@ public class GameManager : MonoBehaviour
 
 	void Awake ()
 	{
-		hudDayCount.text = "Day " + DayChange.DayCounter.ToString ();
+
 		Road.OnRoadFinish += SpawnNewRoad;
 		flyingMoneyAnim = GameManager.Instance.FlyingMoney.GetComponent<Animator> ();
 		TimerAnim = GameManager.Instance.Timer.GetComponent<Animator> ();
@@ -114,8 +109,6 @@ public class GameManager : MonoBehaviour
 		BusStopAmount = 100f;
 		CarHitAmount = 20;
 		DayChange.DayTimer = 120f;
-
-		CurrentState = GameState.Playing;
 
 		CreateFirstRoad ();
 		Money = 0;
@@ -140,9 +133,7 @@ public class GameManager : MonoBehaviour
 	{
 		if (CurrentState == GameState.Playing) {
 
-			//reduce timer
-			DayChange.DayTimer -= Time.deltaTime;
-			hudTimeText.text = "Time Left: " + DayChange.DayTimer.ToString ("f0");
+
 
 			//set road max speed
 			if (RoadSpeed >= 8) {
@@ -151,19 +142,20 @@ public class GameManager : MonoBehaviour
 			
 			if (Money >= DayChange.ObjectiveCount) {
 				CurrentState = GameState.DayOver;
-				if (DayOverText != null) {
-					DayOverBG.SetActive (true);
-					DayOverText.text = DayOverTexts_Good [Random.Range (0, DayOverTexts_Good.Length)];
+				DayOverBG.SetActive (true);
+				ObjectiveComplete = true;
+				if (ShowDayEnd != null) {
+					ShowDayEnd (ObjectiveComplete);
 				}
-				StartCoroutine ("ChangeDay");
+
 
 			} else if (DayChange.DayTimer <= 0 && !crazyStarted3) {
 				CurrentState = GameState.DayOver;
-				if (DayOverText != null) {
-					DayOverBG.SetActive (true);
-					DayOverText.text = DayOverTexts_Bad [Random.Range (0, DayOverTexts_Bad.Length)];
+				DayOverBG.SetActive (true);
+				ObjectiveComplete = false;
+				if (ShowDayEnd != null) {
+					ShowDayEnd (ObjectiveComplete);
 				}
-				StartCoroutine ("ChangeDay");
 			}
 
 			if (DayChange.DayCounter >= 2) {
@@ -182,7 +174,11 @@ public class GameManager : MonoBehaviour
 				} else if (MissedStops == 6) {
 					if (!crazyStarted3) { //Crazy GamePLay implementation triggers
 						crazyStarted3 = true;
-						HUD.SetActive (false);
+						if (HideHUD != null) {
+							HideHUD ();
+						}
+
+
 						showCredits ();
 						DayChange.DayCounter = 1;
 						PlayerPrefs.SetInt ("DayCount", DayChange.DayCounter);
@@ -257,17 +253,7 @@ public class GameManager : MonoBehaviour
 		Road.OnRoadFinish -= SpawnNewRoad;
 	}
 
-	IEnumerator ChangeDay ()
-	{
-		CurrentState = GameState.Paused;
-		//display objective complete mission
-		DayChange.DayCounter++;
-		DayChange.ObjectiveCount += 200;
-		PlayerPrefs.SetInt ("DayCount", DayChange.DayCounter);
-		PlayerPrefs.SetInt ("Objective", DayChange.ObjectiveCount);
-		yield return new WaitForSeconds (3f);
-		Application.LoadLevel ("DayChange");
-	}
+
 
 	IEnumerator ShowThoughtBubble ()
 	{
@@ -293,30 +279,6 @@ public class GameManager : MonoBehaviour
 		ThoughtBubble.SetActive (false);
 	}
 
-
-	public void SpawnNewCar ()
-	{
-		if (CurrentState == GameState.Playing) {
-			myPooledCar = GameObjectPool.GetPool ("CarPool").GetInstance ();
-			car_Obj = myPooledCar.GetComponent<Car> ();
-			int randomSideCar = Random.Range (0, 4);
-			if (randomSideCar == 0) {
-				car_Obj.transform.position = new Vector3 (0.7f, 7, -3);
-				car_Obj.speed = 0;
-			} else if (randomSideCar == 1) {
-				car_Obj.transform.position = new Vector3 (-0.6f, 7, -3);
-				car_Obj.speed = 0;
-			} else if (randomSideCar == 2) {
-				car_Obj.transform.position = new Vector3 (0.7f, -7, -3);
-				car_Obj.speed = 0;
-			} else if (randomSideCar == 3) {
-				car_Obj.transform.position = new Vector3 (-0.6f, -7, -3);
-				car_Obj.speed = 0;
-				
-			}
-		}
-
-	}
 
 	public void flyingTextAnim ()
 	{
