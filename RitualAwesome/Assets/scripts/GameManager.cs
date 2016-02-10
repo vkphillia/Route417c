@@ -82,8 +82,10 @@ public class GameManager : MonoBehaviour
 	//Tutorial
 	[HideInInspector]
 	public bool
-		notFirstTime;
+		notFirstTime =true;
 	public bool cleanData;
+
+    public GameObject instruction;
 
 	void Awake ()
 	{
@@ -303,10 +305,11 @@ public class GameManager : MonoBehaviour
 
 	void StartTutorial ()
 	{
+
 		Console.Log ("Tap and hold to accelerate");
 		Console.Log ("Tilt to accelerate");
 		Console.Log ("Release Tap to brake and stop at Bus stop");
-		
+        instruction.SetActive(true);
 	}
 
 }
