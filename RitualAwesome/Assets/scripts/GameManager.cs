@@ -90,7 +90,6 @@ public class GameManager : MonoBehaviour
 		Road.OnRoadFinish += SpawnNewRoad;
 		flyingMoneyAnim = GameManager.Instance.FlyingMoney.GetComponent<Animator> ();
 		TimerAnim = GameManager.Instance.Timer.GetComponent<Animator> ();
-
 	}
 
 	// Use this for initialization
