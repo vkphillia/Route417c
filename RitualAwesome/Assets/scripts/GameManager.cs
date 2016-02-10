@@ -84,6 +84,12 @@ public class GameManager : MonoBehaviour
 	private Transform myPooledCar;
 	private Car car_Obj;
 
+	//Tutorial
+	[HideInInspector]
+	public bool
+		notFirstTime;
+	public bool cleanData;
+
 	void Awake ()
 	{
 		hudDayCount.text = "Day " + DayChange.DayCounter.ToString ();
@@ -95,6 +101,14 @@ public class GameManager : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
+		if (cleanData) {
+			PlayerPrefs.SetInt ("FirstTime", (notFirstTime ? 0 : 0));
+			cleanData = false;
+			PlayerPrefs.SetInt ("CleanData", (cleanData ? 0 : 0));
+			
+		}
+		notFirstTime = (PlayerPrefs.GetInt ("FirstTime") != 0);
+
 		//configurables
 		BorderDamageAmount = 1f;
 		BusStopAmount = 100f;
@@ -114,6 +128,11 @@ public class GameManager : MonoBehaviour
 			StartCoroutine ("ShowThoughtBubble");
 			
 		}
+
+		if (!notFirstTime) {
+			StartTutorial ();
+		}
+
 	}
 
 
@@ -319,4 +338,13 @@ public class GameManager : MonoBehaviour
 		if (GameManager.Instance.MoneyCounter != null && !GameManager.Instance.crazyStarted3)
 			GameManager.Instance.MoneyCounter.text = "Cash: $ " + GameManager.Instance.Money.ToString (); 
 	}
+
+	void StartTutorial ()
+	{
+		Console.Log ("Tap and hold to accelerate");
+		Console.Log ("Tilt to accelerate");
+		Console.Log ("Release Tap to brake and stop at Bus stop");
+		
+	}
+
 }

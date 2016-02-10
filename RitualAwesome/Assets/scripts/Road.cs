@@ -32,15 +32,16 @@ public class Road : MonoBehaviour
 		if (OnRoadCurrent != null) {
 			OnRoadCurrent (this.transform);
 		}
-		if (!GameManager.Instance.crazyStarted3) {
-			random = Random.Range (0, 5);
-			if (random == 0) {
-				Console.Log ("BusStop");
-				SpawnNewBusStop ();
-			}
-		}
 
-		GameManager.Instance.SpawnNewCar ();
+		if (GameManager.Instance.notFirstTime) {
+			if (!GameManager.Instance.crazyStarted3) {
+				random = Random.Range (0, 5);
+				if (random == 0) {
+					SpawnNewBusStop ();
+				}
+			}
+			GameManager.Instance.SpawnNewCar ();
+		}
 	}
 	
 	// Update is called once per frame
