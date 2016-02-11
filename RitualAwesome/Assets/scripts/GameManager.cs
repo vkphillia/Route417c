@@ -13,7 +13,6 @@ public enum GameState
 
 public delegate void CrazyModeEvent ();
 
-
 public class GameManager : MonoBehaviour
 {
 	public static event CrazyModeEvent HideHUD;
@@ -39,13 +38,6 @@ public class GameManager : MonoBehaviour
 	private Transform myPooledRoad;
 	private Road road_Obj;
 	public float RoadSpeed;
-
-	public bool Reset;
-
-
-	public GameObject Timer;
-	private Animator TimerAnim;
-
 	public int MissedStops;
 	public bool crazyStarted;
 	public bool crazyStarted2;
@@ -81,7 +73,6 @@ public class GameManager : MonoBehaviour
 	{
 
 		Road.OnRoadFinish += SpawnNewRoad;
-		TimerAnim = GameManager.Instance.Timer.GetComponent<Animator> ();
 	}
 
 	// Use this for initialization
@@ -193,19 +184,7 @@ public class GameManager : MonoBehaviour
 
 
 
-	public IEnumerator PlayTimer ()
-	{
-		TimerAnim.Play ("Timer_Go");
-		yield return new WaitForSeconds (2f);
-		TimerAnim.Play ("Timer_Idle");
-		TimerAnim.gameObject.SetActive (false);
-	}
 
-	public void StopTimer ()
-	{
-		TimerAnim.Play ("Timer_Idle");
-		TimerAnim.gameObject.SetActive (false);
-	}
 
 	void OnDestroy ()
 	{
@@ -245,7 +224,5 @@ public class GameManager : MonoBehaviour
 		Console.Log ("Release Tap to brake and stop at Bus stop");
 		instruction.SetActive (true);
 	}
-
-
 
 }

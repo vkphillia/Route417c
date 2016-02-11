@@ -50,10 +50,7 @@ public class Car : MonoBehaviour
 			RemoveCar ();
 		}
 	}
-    
-
-
-
+  
 	public void RemoveCar ()
 	{
 		transform.rotation = Quaternion.Euler (0, 0, 0);
@@ -62,7 +59,6 @@ public class Car : MonoBehaviour
 		randomNumer = Random.Range (0, colorCar.Length);
 		GameObjectPool.GetPool ("CarPool").ReleaseInstance (transform);
 	}
-
 
 	void OnCollisionEnter2D (Collision2D other)
 	{

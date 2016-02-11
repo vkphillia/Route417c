@@ -2,20 +2,31 @@ using UnityEngine;
 using System.Collections;
 
 public delegate void BusCollisionEvent (float Earning);
+public delegate void TimerAnimationEvent () ;
 public class BusStop : MonoBehaviour
 {
 	public static event BusCollisionEvent ShowPositiveFlyingText;
+
+	public static event TimerAnimationEvent StopTimerAnimation ;
 	private float stopTimer;
+
 	private bool stopped;
 	private bool entered;
 	private bool collected;
 	public Sprite highlightedStop;
 	public Sprite nonHighlightedStop;
+	public GameObject BusStopTimer;
+	private Transform myPooledTimer;
+	private BusStopTimer busStoptimer_obj;
+
+
 	[HideInInspector]
 	public float
 		BusStopAmount;
 
-	// Use this for initialization
+	private bool timerSpawned;
+
+
 	void Start ()
 	{
 		stopTimer = 1f;
@@ -40,15 +51,22 @@ public class BusStop : MonoBehaviour
 					}
 					collected = true;
 				} else {
-					stopTimer -= Time.deltaTime;
-					Console.Log ("ReducingTIme");
 					//play Go animation
-					GameManager.Instance.Timer.SetActive (true);
-					GameManager.Instance.StartCoroutine ("PlayTimer");
+					stopTimer -= Time.deltaTime;
+					if (!timerSpawned) {
+						myPooledTimer = GameObjectPool.GetPool ("BusStopTimerPool").GetInstance ();
+						busStoptimer_obj = myPooledTimer.GetComponent<BusStopTimer> ();
+						timerSpawned = true;
+					}
+					StartCoroutine (busStoptimer_obj.PlayTimer ());
 				}
 			}
 		} else {
-			GameManager.Instance.StopTimer ();
+			timerSpawned = false;
+			if (StopTimerAnimation != null) {
+				StopTimerAnimation ();
+			}
+
 			this.gameObject.GetComponent<SpriteRenderer> ().sprite = highlightedStop;
 		}
 
@@ -71,6 +89,7 @@ public class BusStop : MonoBehaviour
 		if (other.gameObject.tag == "BusFrontCol") {
 			//Console.Log ("Exited");
 			entered = false;
+			stopTimer = 1;
 		} 
 	}
 
@@ -84,6 +103,7 @@ public class BusStop : MonoBehaviour
 
 	void RemoveBusStop ()
 	{
+
 		if (!collected) {
 			GameManager.Instance.MissedStops++;	
 		} else {
@@ -101,11 +121,12 @@ public class BusStop : MonoBehaviour
 			}
             
 		}
-
 		stopTimer = 1f;
 		collected = false;
 		stopped = false;
+		timerSpawned = false;
 		GameObjectPool.GetPool ("BusStopPool").ReleaseInstance (transform);
 	}
+
 
 }
