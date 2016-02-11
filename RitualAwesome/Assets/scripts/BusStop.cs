@@ -2,11 +2,14 @@ using UnityEngine;
 using System.Collections;
 
 public delegate void BusCollisionEvent (float Earning);
-public delegate void TimerAnimationEvent () ;
+public delegate void MyEvent () ;
+
 public class BusStop : MonoBehaviour
 {
 	public static event BusCollisionEvent ShowPositiveFlyingText;
-	public static event TimerAnimationEvent StopTimerAnimation ;
+	public static event MyEvent StopTimerAnimation ;
+	public static event MyEvent CrazyModeEnd ;
+
 	private float stopTimer;
 
 	private bool stopped;
@@ -54,13 +57,14 @@ public class BusStop : MonoBehaviour
 						}
 						collected = true;
 						if (!GameManager.Instance.crazyStarted3) {
+							if (CrazyModeEnd != null) {
+								CrazyModeEnd ();
+							}
 							GameManager.Instance.crazyStarted = false;
 							GameManager.Instance.crazyStarted2 = false;
 							GameManager.Instance.MissedStops = 0;
 							GameManager.Instance.source_CityBGSound.Play ();
 							GameManager.Instance.source_CityBGSound.volume = 1;
-							
-							
 							GameManager.Instance.source_CrazyBG3.Stop ();
 							iTween.AudioTo (gameObject, iTween.Hash ("name", "volUpCityBG", "audiosource", GameManager.Instance.source_CityBGSound, "volume", 1f, "time", 1f));
 							

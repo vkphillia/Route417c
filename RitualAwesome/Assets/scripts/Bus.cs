@@ -7,13 +7,13 @@ public class Bus : MonoBehaviour
 {
 	public static event InputEvent OnAccelerate;
 
-	public Sprite colorfulBus;
-	public Sprite bWBus;
+
 	private const float ROTATE_AMOUNT = 5;
 	private bool brake;
 	private Touch thisTouch;
 	private float busY;
 	private float busZ;
+	private Animator myAnim;
 
 
 	//temp
@@ -24,20 +24,14 @@ public class Bus : MonoBehaviour
 	{
 		busY = transform.position.y;
 		busZ = transform.position.z;
+		myAnim = GetComponent<Animator> ();
+		GameManager.OnCrazyLevel1 += ChangeBusColor;
+		BusStop.CrazyModeEnd += RevertToBW;
 	}
 
     
 	void Update ()
 	{
-
-		if (GameManager.Instance.crazyStarted) {
-			GetComponentInChildren<SpriteRenderer> ().sprite = colorfulBus;
-			GetComponent<Animator> ().enabled = true;
-		} else {
-			GetComponentInChildren<SpriteRenderer> ().sprite = bWBus;
-			GetComponent<Animator> ().enabled = false;
-		}
-
 		if (GameManager.Instance.CurrentState == GameState.Playing) {
 			BusMovement ();
 			BusMovementMobile ();
@@ -50,6 +44,20 @@ public class Bus : MonoBehaviour
 				Application.LoadLevel ("Main_Game");
 			}
 		}
+	}
+
+	IEnumerator ChangeColor ()
+	{
+		myAnim.Play ("Bus_Gradient");
+		yield return new WaitForSeconds (2f);
+		myAnim.Play ("Bus_Colored");
+	}
+
+	IEnumerator ChangeColorToBW ()
+	{
+		myAnim.Play ("Bus_ColorToBW");
+		yield return new WaitForSeconds (2f);
+		myAnim.Play ("Bus_Idle");
 	}
 
 	private void BusSpeedingKeyboard ()
@@ -147,4 +155,21 @@ public class Bus : MonoBehaviour
 		
 		return angle;
 	}	
+
+	void ChangeBusColor ()
+	{
+		StartCoroutine (ChangeColor ());
+	}
+
+	void RevertToBW ()
+	{
+		StartCoroutine (ChangeColorToBW ());
+	}
+
+	void OnDestroy ()
+	{
+		GameManager.OnCrazyLevel1 -= ChangeBusColor;
+		BusStop.CrazyModeEnd -= RevertToBW;
+		
+	}
 }

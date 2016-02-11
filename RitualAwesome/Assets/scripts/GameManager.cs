@@ -14,10 +14,12 @@ public enum GameState
 
 public delegate void GameEndEvent () ;
 
+
 public class GameManager : MonoBehaviour
 {
 
 	public static event GameEndEvent OnGameEnd;
+	public static event GameEndEvent OnCrazyLevel1;
 	//public static event GameEndEvent OnGameEnd;
 	
 	//Static Singleton Instance
@@ -132,6 +134,9 @@ public class GameManager : MonoBehaviour
 						source_CrazyBG3.Play ();
 						iTween.AudioTo (gameObject, iTween.Hash ("name", "volUpCrazy", "audiosource", GameManager.Instance.source_CrazyBG3, "volume", 1f, "time", 1f));
 						iTween.AudioTo (gameObject, iTween.Hash ("name", "volDownCityBG", "audiosource", GameManager.Instance.source_CityBGSound, "volume", 0f, "time", 1f, "oncomplete", "stopCityBG"));
+						if (OnCrazyLevel1 != null) {
+							OnCrazyLevel1 ();
+						}
 					}
 				} else if (MissedStops == 2) {
 					if (!crazyStarted2) { //Crazy GamePLay implementation triggers
