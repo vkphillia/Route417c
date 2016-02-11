@@ -44,9 +44,15 @@ public class GameManager : MonoBehaviour
 	//Player Stuff
 	public int Money;
 	public Text MoneyCounter;
-	public float BorderDamageAmount;
-	public float BusStopAmount;
-	public float CarHitAmount;
+	[HideInInspector]
+	public float
+		BorderDamageAmount;
+	[HideInInspector]
+	public float
+		BusStopAmount;
+	[HideInInspector]
+	public float
+		CarHitAmount;
 
 	public bool Reset;
 	public TextMesh FlyingMoney;
@@ -62,7 +68,7 @@ public class GameManager : MonoBehaviour
 
 	public GameObject CreditsAnim;
 	public GameObject DayOverBG;
-	private bool ObjectiveComplete;
+	private bool ObjectiveCompleteStatus;
 
 	//sounds
 	public AudioSource source_CityBGSound;
@@ -82,10 +88,10 @@ public class GameManager : MonoBehaviour
 	//Tutorial
 	[HideInInspector]
 	public bool
-		notFirstTime =true;
+		notFirstTime = true;
 	public bool cleanData;
 
-    public GameObject instruction;
+	public GameObject instruction;
 
 	void Awake ()
 	{
@@ -115,7 +121,7 @@ public class GameManager : MonoBehaviour
 		CreateFirstRoad ();
 		Money = 0;
 		if (MoneyCounter != null && !GameManager.Instance.crazyStarted3)
-			MoneyCounter.text = "Cash: $ " + Money.ToString (); 
+			MoneyCounter.text = "Cash: $ " + Money.ToString () + "/" + DayChange.ObjectiveCount; 
 
 		//Play city music
 		source_CityBGSound.Play ();
@@ -134,9 +140,6 @@ public class GameManager : MonoBehaviour
 	void Update ()
 	{
 		if (CurrentState == GameState.Playing) {
-
-
-
 			//set road max speed
 			if (RoadSpeed >= 8) {
 				RoadSpeed = 8;
@@ -145,18 +148,18 @@ public class GameManager : MonoBehaviour
 			if (Money >= DayChange.ObjectiveCount) {
 				CurrentState = GameState.DayOver;
 				DayOverBG.SetActive (true);
-				ObjectiveComplete = true;
+				ObjectiveCompleteStatus = true;
 				if (ShowDayEnd != null) {
-					ShowDayEnd (ObjectiveComplete);
+					ShowDayEnd (ObjectiveCompleteStatus);
 				}
 
 
 			} else if (DayChange.DayTimer <= 0 && !crazyStarted3) {
 				CurrentState = GameState.DayOver;
 				DayOverBG.SetActive (true);
-				ObjectiveComplete = false;
+				ObjectiveCompleteStatus = false;
 				if (ShowDayEnd != null) {
-					ShowDayEnd (ObjectiveComplete);
+					ShowDayEnd (ObjectiveCompleteStatus);
 				}
 			}
 
@@ -242,20 +245,16 @@ public class GameManager : MonoBehaviour
 		TimerAnim.gameObject.SetActive (false);
 	}
 
-
 	public void StopTimer ()
 	{
 		TimerAnim.Play ("Timer_Idle");
 		TimerAnim.gameObject.SetActive (false);
 	}
 
-
 	void OnDestroy ()
 	{
 		Road.OnRoadFinish -= SpawnNewRoad;
 	}
-
-
 
 	IEnumerator ShowThoughtBubble ()
 	{
@@ -281,7 +280,6 @@ public class GameManager : MonoBehaviour
 		ThoughtBubble.SetActive (false);
 	}
 
-
 	public void flyingTextAnim ()
 	{
 		//flying text animation
@@ -290,7 +288,7 @@ public class GameManager : MonoBehaviour
 		GameManager.Instance.StartCoroutine ("RemoveFlyingMoney");
 		GameManager.Instance.Money -= (int)GameManager.Instance.CarHitAmount;
 		if (GameManager.Instance.MoneyCounter != null && !GameManager.Instance.crazyStarted3)
-			GameManager.Instance.MoneyCounter.text = "Cash: $ " + GameManager.Instance.Money.ToString (); 
+			GameManager.Instance.MoneyCounter.text = "Cash: $ " + GameManager.Instance.Money.ToString () + "/" + DayChange.ObjectiveCount;  
 	}
 
 	public void ReduceMoney (float damageAmount)
@@ -300,16 +298,15 @@ public class GameManager : MonoBehaviour
 		GameManager.Instance.StartCoroutine ("RemoveFlyingMoney");
 		GameManager.Instance.Money -= (int)(damageAmount * GameManager.Instance.RoadSpeed);
 		if (GameManager.Instance.MoneyCounter != null && !GameManager.Instance.crazyStarted3)
-			GameManager.Instance.MoneyCounter.text = "Cash: $ " + GameManager.Instance.Money.ToString (); 
+			GameManager.Instance.MoneyCounter.text = "Cash: $ " + GameManager.Instance.Money.ToString () + "/" + DayChange.ObjectiveCount;  
 	}
 
 	void StartTutorial ()
 	{
-
 		Console.Log ("Tap and hold to accelerate");
 		Console.Log ("Tilt to accelerate");
 		Console.Log ("Release Tap to brake and stop at Bus stop");
-        instruction.SetActive(true);
+		instruction.SetActive (true);
 	}
 
 }

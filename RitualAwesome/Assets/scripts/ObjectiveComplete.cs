@@ -1,28 +1,32 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
 
 public class ObjectiveComplete : MonoBehaviour
 {
-	private Text DayOverText;
+	public Text DayEndText;
+	public Text PlayerDayOverText;
 	public string[] DayOverTexts_Good;
 	public string[] DayOverTexts_Bad;
 
 	void Awake ()
 	{
 		GameManager.ShowDayEnd += OnShowEndDay;
+
 	}
 
 	void OnShowEndDay (bool objectiveStatus)
 	{
 		if (objectiveStatus) {
-			if (DayOverText != null) {
-				DayOverText.text = DayOverTexts_Good [Random.Range (0, DayOverTexts_Good.Length)];
+			if (PlayerDayOverText != null) {
+				DayEndText.text = "Day has ended and you met your targets";
+				PlayerDayOverText.text = DayOverTexts_Good [Random.Range (0, DayOverTexts_Good.Length)];
 			}
 			StartCoroutine ("ChangeDay");
 		} else {
-			if (DayOverText != null) {
-				DayOverText.text = DayOverTexts_Bad [Random.Range (0, DayOverTexts_Bad.Length)];
+			if (PlayerDayOverText != null) {
+				DayEndText.text = "Day has ended but you failed to meet your targets";
+				PlayerDayOverText.text = DayOverTexts_Bad [Random.Range (0, DayOverTexts_Bad.Length)];
 			}
 			StartCoroutine ("ChangeDay");
 		}

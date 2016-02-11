@@ -34,7 +34,7 @@ public class BusStop : MonoBehaviour
 					GameManager.Instance.StartCoroutine ("RemoveFlyingMoney");
 					GameManager.Instance.Money += (int)GameManager.Instance.BusStopAmount;
 					if (GameManager.Instance.MoneyCounter != null && !GameManager.Instance.crazyStarted3)
-						GameManager.Instance.MoneyCounter.text = "Cash: $ " + GameManager.Instance.Money.ToString (); 
+						GameManager.Instance.MoneyCounter.text = "Cash: $ " + GameManager.Instance.Money.ToString () + "/" + DayChange.ObjectiveCount;  
 					collected = true;
 				} else {
 					stopTimer -= Time.deltaTime;
