@@ -1,10 +1,19 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+public delegate void OnCollisionWithBorder (float DamageAmount);
 public class Borders : MonoBehaviour
 {
-
+	public static event OnCollisionWithBorder ReducePlayerMoney;
 	private float reduceMoneyTimer;
+	[HideInInspector]
+	public float
+		BorderDamageAmount;
+
+	void Start ()
+	{
+		BorderDamageAmount = 1f;
+	}
 
 
 	void OnCollisionStay2D (Collision2D other)
@@ -16,7 +25,10 @@ public class Borders : MonoBehaviour
 				//create spark effect and sound
 				
 				if (reduceMoneyTimer <= 0) {
-					GameManager.Instance.ReduceMoney (GameManager.Instance.BorderDamageAmount);
+					if (ReducePlayerMoney != null) {
+						ReducePlayerMoney (BorderDamageAmount);
+					}
+					//GameManager.Instance.ReduceMoney (GameManager.Instance.BorderDamageAmount);
 					GameManager.Instance.source_LoseCoin.Play ();
 					reduceMoneyTimer = 0.5f;
 				}

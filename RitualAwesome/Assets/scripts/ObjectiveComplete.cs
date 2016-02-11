@@ -11,7 +11,7 @@ public class ObjectiveComplete : MonoBehaviour
 
 	void Awake ()
 	{
-		GameManager.ShowDayEnd += OnShowEndDay;
+		MoneyHandler.ShowDayEnd += OnShowEndDay;
 
 	}
 
@@ -34,7 +34,7 @@ public class ObjectiveComplete : MonoBehaviour
 
 	void OnDestroy ()
 	{
-		GameManager.ShowDayEnd -= OnShowEndDay;
+		MoneyHandler.ShowDayEnd -= OnShowEndDay;
 	}
 
 	IEnumerator ChangeDay ()

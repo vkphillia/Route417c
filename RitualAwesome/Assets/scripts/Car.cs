@@ -1,18 +1,24 @@
 ﻿using UnityEngine;
 using System.Collections;
 
+public delegate void CarCollisionEvent (float DamageAmount);
+
 public class Car : MonoBehaviour
 {
+	public static event CarCollisionEvent ShowFlyingText;
 	public float speed;
 	public Sprite[] colorCar;
 	public Sprite bWCar;
 	private int randomNumer;
 	public bool carBehindBus;
-
+	[HideInInspector]
+	public float
+		CarHitAmount;
 
 	void Start ()
 	{
 		randomNumer = Random.Range (0, colorCar.Length);
+		CarHitAmount = 5;
 	}
 
 	void Update ()
@@ -40,8 +46,6 @@ public class Car : MonoBehaviour
 			GetComponent<SpriteRenderer> ().sprite = bWCar;
 			GetComponent<Animator> ().enabled = false;
 		}
-
-
 		if (transform.position.y >= 7f || transform.position.y <= -8f) {
 			RemoveCar ();
 		}
@@ -66,14 +70,12 @@ public class Car : MonoBehaviour
 			Console.Log ("Car behind another car");
 			carBehindBus = true;
 			speed = other.gameObject.GetComponent<Car> ().speed;	
-		} /*else if (other.gameObject.tag == "BusBackCol") {
-			Console.Log ("Car is behind the truck honking");
-			carBehindBus = true;
-			speed = GameManager.Instance.RoadSpeed;	
-		}*/
-		else if (other.gameObject.tag == "BusFrontCol") {
+		} else if (other.gameObject.tag == "BusFrontCol") {
 			Console.Log ("Bus hit car");
-			GameManager.Instance.flyingTextAnim ();
+			if (ShowFlyingText != null) {
+				ShowFlyingText (CarHitAmount);
+			}
+			//GameManager.Instance.flyingTextAnim ();
 			GameManager.Instance.source_LoseCoin.Play ();
 			this.GetComponent<Rigidbody2D> ().AddForce ((Vector2.up + Vector2.left) * 4 * GameManager.Instance.RoadSpeed, ForceMode2D.Impulse);
 			GameManager.Instance.RoadSpeed -= 2;
@@ -113,8 +115,4 @@ public class Car : MonoBehaviour
 			carBehindBus = false;
 		} 
 	}
-
-
-
-
 }

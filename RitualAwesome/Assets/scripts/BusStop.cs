@@ -1,19 +1,25 @@
 using UnityEngine;
 using System.Collections;
 
+public delegate void BusCollisionEvent (float Earning);
 public class BusStop : MonoBehaviour
 {
+	public static event BusCollisionEvent ShowPositiveFlyingText;
 	private float stopTimer;
 	private bool stopped;
 	private bool entered;
 	private bool collected;
 	public Sprite highlightedStop;
 	public Sprite nonHighlightedStop;
+	[HideInInspector]
+	public float
+		BusStopAmount;
 
 	// Use this for initialization
 	void Start ()
 	{
 		stopTimer = 1f;
+		BusStopAmount = 100;
 	}
 	
 	// Update is called once per frame
@@ -29,12 +35,9 @@ public class BusStop : MonoBehaviour
 					GameManager.Instance.source_GetCoin.Play ();
 					
 					//flying text animation
-					GameManager.Instance.FlyingMoney.gameObject.SetActive (true);
-					GameManager.Instance.FlyingMoney.text = "+ " + (int)(GameManager.Instance.BusStopAmount);
-					GameManager.Instance.StartCoroutine ("RemoveFlyingMoney");
-					GameManager.Instance.Money += (int)GameManager.Instance.BusStopAmount;
-					if (GameManager.Instance.MoneyCounter != null && !GameManager.Instance.crazyStarted3)
-						GameManager.Instance.MoneyCounter.text = "Cash: $ " + GameManager.Instance.Money.ToString () + "/" + DayChange.ObjectiveCount;  
+					if (ShowPositiveFlyingText != null) {
+						ShowPositiveFlyingText (BusStopAmount);
+					}
 					collected = true;
 				} else {
 					stopTimer -= Time.deltaTime;

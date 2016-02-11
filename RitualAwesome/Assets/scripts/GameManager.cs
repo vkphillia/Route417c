@@ -12,12 +12,12 @@ public enum GameState
 ;
 
 public delegate void CrazyModeEvent ();
-public delegate void DayEndEvent (bool objectiveStatus);
+
 
 public class GameManager : MonoBehaviour
 {
 	public static event CrazyModeEvent HideHUD;
-	public static event DayEndEvent ShowDayEnd;
+
 	
 	//Static Singleton Instance
 	public static GameManager _Instance = null;
@@ -40,23 +40,8 @@ public class GameManager : MonoBehaviour
 	private Road road_Obj;
 	public float RoadSpeed;
 
-
-	//Player Stuff
-	public int Money;
-	public Text MoneyCounter;
-	[HideInInspector]
-	public float
-		BorderDamageAmount;
-	[HideInInspector]
-	public float
-		BusStopAmount;
-	[HideInInspector]
-	public float
-		CarHitAmount;
-
 	public bool Reset;
-	public TextMesh FlyingMoney;
-	private Animator flyingMoneyAnim;
+
 
 	public GameObject Timer;
 	private Animator TimerAnim;
@@ -67,8 +52,7 @@ public class GameManager : MonoBehaviour
 	public bool crazyStarted3;
 
 	public GameObject CreditsAnim;
-	public GameObject DayOverBG;
-	private bool ObjectiveCompleteStatus;
+
 
 	//sounds
 	public AudioSource source_CityBGSound;
@@ -97,7 +81,6 @@ public class GameManager : MonoBehaviour
 	{
 
 		Road.OnRoadFinish += SpawnNewRoad;
-		flyingMoneyAnim = GameManager.Instance.FlyingMoney.GetComponent<Animator> ();
 		TimerAnim = GameManager.Instance.Timer.GetComponent<Animator> ();
 	}
 
@@ -113,15 +96,10 @@ public class GameManager : MonoBehaviour
 		notFirstTime = (PlayerPrefs.GetInt ("FirstTime") != 0);
 
 		//configurables
-		BorderDamageAmount = 1f;
-		BusStopAmount = 100f;
-		CarHitAmount = 20;
+
 		DayChange.DayTimer = 120f;
 
 		CreateFirstRoad ();
-		Money = 0;
-		if (MoneyCounter != null && !GameManager.Instance.crazyStarted3)
-			MoneyCounter.text = "Cash: $ " + Money.ToString () + "/" + DayChange.ObjectiveCount; 
 
 		//Play city music
 		source_CityBGSound.Play ();
@@ -145,23 +123,7 @@ public class GameManager : MonoBehaviour
 				RoadSpeed = 8;
 			}
 			
-			if (Money >= DayChange.ObjectiveCount) {
-				CurrentState = GameState.DayOver;
-				DayOverBG.SetActive (true);
-				ObjectiveCompleteStatus = true;
-				if (ShowDayEnd != null) {
-					ShowDayEnd (ObjectiveCompleteStatus);
-				}
 
-
-			} else if (DayChange.DayTimer <= 0 && !crazyStarted3) {
-				CurrentState = GameState.DayOver;
-				DayOverBG.SetActive (true);
-				ObjectiveCompleteStatus = false;
-				if (ShowDayEnd != null) {
-					ShowDayEnd (ObjectiveCompleteStatus);
-				}
-			}
 
 			if (DayChange.DayCounter >= 2) {
 				if (MissedStops == 4) {
@@ -229,13 +191,7 @@ public class GameManager : MonoBehaviour
 	}
 
 
-	public IEnumerator RemoveFlyingMoney ()
-	{
-		flyingMoneyAnim.Play ("FlyingMoney_Fly");
-		yield return new WaitForSeconds (0.4f);
-		flyingMoneyAnim.Play ("FlyingMoney_Idle");
-		FlyingMoney.gameObject.SetActive (false);
-	}
+
 
 	public IEnumerator PlayTimer ()
 	{
@@ -280,26 +236,7 @@ public class GameManager : MonoBehaviour
 		ThoughtBubble.SetActive (false);
 	}
 
-	public void flyingTextAnim ()
-	{
-		//flying text animation
-		GameManager.Instance.FlyingMoney.gameObject.SetActive (true);
-		GameManager.Instance.FlyingMoney.text = "- " + (int)(GameManager.Instance.CarHitAmount);
-		GameManager.Instance.StartCoroutine ("RemoveFlyingMoney");
-		GameManager.Instance.Money -= (int)GameManager.Instance.CarHitAmount;
-		if (GameManager.Instance.MoneyCounter != null && !GameManager.Instance.crazyStarted3)
-			GameManager.Instance.MoneyCounter.text = "Cash: $ " + GameManager.Instance.Money.ToString () + "/" + DayChange.ObjectiveCount;  
-	}
 
-	public void ReduceMoney (float damageAmount)
-	{
-		GameManager.Instance.FlyingMoney.gameObject.SetActive (true);
-		GameManager.Instance.FlyingMoney.text = "- " + (int)(damageAmount * GameManager.Instance.RoadSpeed);
-		GameManager.Instance.StartCoroutine ("RemoveFlyingMoney");
-		GameManager.Instance.Money -= (int)(damageAmount * GameManager.Instance.RoadSpeed);
-		if (GameManager.Instance.MoneyCounter != null && !GameManager.Instance.crazyStarted3)
-			GameManager.Instance.MoneyCounter.text = "Cash: $ " + GameManager.Instance.Money.ToString () + "/" + DayChange.ObjectiveCount;  
-	}
 
 	void StartTutorial ()
 	{
@@ -308,5 +245,7 @@ public class GameManager : MonoBehaviour
 		Console.Log ("Release Tap to brake and stop at Bus stop");
 		instruction.SetActive (true);
 	}
+
+
 
 }

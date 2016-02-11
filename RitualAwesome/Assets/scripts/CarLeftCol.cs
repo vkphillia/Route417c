@@ -15,7 +15,8 @@ public class CarLeftCol : MonoBehaviour
 			this.gameObject.GetComponentInParent<Car> ().speed = GameManager.Instance.RoadSpeed;	
 		} else if (other.gameObject.tag == "BusForntCol") {
 			Console.Log ("Bus hit car");
-			GameManager.Instance.flyingTextAnim ();
+
+			//GameManager.Instance.flyingTextAnim ();
 			GameManager.Instance.source_LoseCoin.Play ();
 			this.GetComponent<Rigidbody2D> ().AddForce ((Vector2.up + Vector2.right) * 8 * GameManager.Instance.RoadSpeed, ForceMode2D.Impulse);
 			GameManager.Instance.RoadSpeed -= 2;
