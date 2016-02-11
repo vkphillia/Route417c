@@ -48,6 +48,8 @@ public class GameManager : MonoBehaviour
 	public GameObject CreditsAnim;
 
 
+
+
 	//sounds
 	public AudioSource source_CityBGSound;
 	public AudioSource source_CrazyBG3;
@@ -71,6 +73,7 @@ public class GameManager : MonoBehaviour
 	public bool cleanData;
 
 	public GameObject instruction;
+	public Transform TimerInHeirarchy;
 
 	void Awake ()
 	{

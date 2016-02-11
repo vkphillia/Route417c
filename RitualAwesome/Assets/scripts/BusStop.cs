@@ -14,9 +14,7 @@ public class BusStop : MonoBehaviour
 	private bool collected;
 	public Sprite highlightedStop;
 	public Sprite nonHighlightedStop;
-	public GameObject BusStopTimer;
-	private Transform myPooledTimer;
-	private BusStopTimer busStoptimer_obj;
+
 
 
 	[HideInInspector]
@@ -70,20 +68,13 @@ public class BusStop : MonoBehaviour
 					} else {
 						//play Go animation
 						stopTimer -= Time.deltaTime;
-						if (!timerSpawned) {
-							myPooledTimer = GameObjectPool.GetPool ("BusStopTimerPool").GetInstance ();
-							busStoptimer_obj = myPooledTimer.GetComponent<BusStopTimer> ();
-							timerSpawned = true;
-						}
-						StartCoroutine (busStoptimer_obj.PlayTimer ());
+						GameManager.Instance.TimerInHeirarchy.gameObject.SetActive (true);
+						StartCoroutine (PlayTimer ());
 					}
 				}
 			} else {
 				timerSpawned = false;
-				if (StopTimerAnimation != null) {
-					StopTimerAnimation ();
-				}
-
+				GameManager.Instance.TimerInHeirarchy.gameObject.SetActive (false);
 				this.gameObject.GetComponent<SpriteRenderer> ().sprite = highlightedStop;
 			}
 
@@ -131,6 +122,13 @@ public class BusStop : MonoBehaviour
 		timerSpawned = false;
 		GameObjectPool.GetPool ("BusStopPool").ReleaseInstance (transform);
 	}
+	public IEnumerator PlayTimer ()
+	{
+		GameManager.Instance.TimerInHeirarchy.GetComponent<Animator> ().Play ("Timer_Go");
+		yield return new WaitForSeconds (2f);
+		GameManager.Instance.TimerInHeirarchy.GetComponent<Animator> ().Play ("Timer_Idle");
+	}
+
 
 
 }

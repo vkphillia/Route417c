@@ -44,6 +44,7 @@ public class Road : MonoBehaviour
 				random = Random.Range (0, 5);
 				if (random == 0) {
 					SpawnNewBusStop ();
+
 				}
 			}
 			SpawnNewCar ();
@@ -111,14 +112,16 @@ public class Road : MonoBehaviour
 	{
 		myPooledBusStop = GameObjectPool.GetPool ("BusStopPool").GetInstance ();
 		busStop_Obj = myPooledBusStop.GetComponent<BusStop> ();
+		Console.Log (busStop_Obj);
 		int randomSide = Random.Range (0, 2);
 		if (randomSide == 0) {
 			busStop_Obj.transform.position = new Vector3 (-1.3f, 7, -3);
-		} else 
+
+		} else {
 			busStop_Obj.transform.position = new Vector3 (1.5f, 7, -3);
-		//busStop_Obj.transform.SetParent (gameObject.transform);
+		}
+
 		Console.Log ("BusStop Spawned");
-		
 	}
 
 

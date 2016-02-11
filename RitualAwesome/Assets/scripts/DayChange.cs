@@ -8,6 +8,7 @@ public class DayChange : MonoBehaviour
 	public Text DayCountText;
 	public Text ObjectiveText;
 	public Text PlayerText;
+	public Text Tap;
 	public static int DayCounter;
 	public static int ObjectiveCount;
 	public bool Reset;
@@ -34,6 +35,7 @@ public class DayChange : MonoBehaviour
 		if (ready) {
 			if (Input.anyKeyDown) {
 				Console.Log ("Clicked");
+				Tap.text = "Loading";
 				Application.LoadLevel ("Main_Game");
 				ready = false;
 			}
@@ -74,6 +76,7 @@ public class DayChange : MonoBehaviour
 			ObjectiveText.text = "Objective: $" + ObjectiveCount; 
 		if (PlayerText != null) {
 			PlayerText.text = PlayerTextsArr [random]; 
+			Tap.text = "Tap to Play";
 		}
 	}
 
