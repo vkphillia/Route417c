@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public delegate void OnCollisionWithBorder (float DamageAmount);
@@ -13,6 +13,7 @@ public class Borders : MonoBehaviour
 	void Start ()
 	{
 		BorderDamageAmount = 1f;
+
 	}
 
 
@@ -21,19 +22,20 @@ public class Borders : MonoBehaviour
 		if (other.gameObject.tag == "BusFrontCol") {
 			if (GameManager.Instance.RoadSpeed > 1f) {
 				
-				Console.Log ("Hit Border");
+				//Console.Log ("Hit Border");
 				//create spark effect and sound
-				
-				if (reduceMoneyTimer <= 0) {
-					if (ReducePlayerMoney != null) {
-						ReducePlayerMoney (BorderDamageAmount);
+				if (!GameManager.Instance.crazyStarted3) {
+					if (reduceMoneyTimer <= 0) {
+						if (ReducePlayerMoney != null) {
+							ReducePlayerMoney (BorderDamageAmount);
+						}
+					
+						GameManager.Instance.source_LoseCoin.Play ();
+						reduceMoneyTimer = 0.5f;
 					}
-					//GameManager.Instance.ReduceMoney (GameManager.Instance.BorderDamageAmount);
-					GameManager.Instance.source_LoseCoin.Play ();
-					reduceMoneyTimer = 0.5f;
-				}
-				reduceMoneyTimer -= Time.deltaTime;
-			} 
+					reduceMoneyTimer -= Time.deltaTime;
+				} 
+			}
 		} 
 	}
 

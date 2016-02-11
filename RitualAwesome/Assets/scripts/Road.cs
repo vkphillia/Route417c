@@ -7,10 +7,13 @@ public delegate void RoadCurrentEvent (Transform thisRoad);
 public class Road : MonoBehaviour
 {
 	public static event RoadEvent OnRoadFinish;
-	public static event RoadCurrentEvent OnRoadCurrent;
+	//public static event RoadCurrentEvent OnRoadCurrent;
 
 	public bool currentRoad;
 	private int random;
+	[HideInInspector]
+	public bool
+		colored;
 
 	//Bus Stop spawning
 	private Transform myPooledBusStop;
@@ -22,8 +25,8 @@ public class Road : MonoBehaviour
 
 
 	//sprites
-	public Sprite colorfulRoad;
-	public Sprite bWRoad;
+	//public Sprite colorfulRoad;
+	//public Sprite bWRoad;
 
 	void Awake ()
 	{
@@ -32,9 +35,9 @@ public class Road : MonoBehaviour
 
 	public void Initialize ()
 	{
-		if (OnRoadCurrent != null) {
+		/*if (OnRoadCurrent != null) {
 			OnRoadCurrent (this.transform);
-		}
+		}*/
 
 		if (GameManager.Instance.notFirstTime) {
 			if (!GameManager.Instance.crazyStarted3) {
@@ -69,12 +72,23 @@ public class Road : MonoBehaviour
 		}
 
 		if (GameManager.Instance.crazyStarted3) {
-			GetComponent<SpriteRenderer> ().sprite = colorfulRoad;
-			GetComponent<Animator> ().enabled = true;
+			if (!colored) {
+				GetComponent<Animator> ().Play ("Road_Colored");
+			}
+
 		} else {
-			GetComponent<SpriteRenderer> ().sprite = bWRoad;
-			GetComponent<Animator> ().enabled = false;
+			GetComponent<Animator> ().Play ("Road_Idle");
 		}
+	}
+
+
+
+	IEnumerator ChangeColor ()
+	{
+		GetComponent<Animator> ().Play ("Road_Gradient");
+		yield return new WaitForSeconds (1f);
+		GetComponent<Animator> ().Play ("Road_Colored");
+		colored = true;
 	}
 
 	void RemoveRoad ()
@@ -102,7 +116,7 @@ public class Road : MonoBehaviour
 			busStop_Obj.transform.position = new Vector3 (-1.3f, 7, -3);
 		} else 
 			busStop_Obj.transform.position = new Vector3 (1.5f, 7, -3);
-		busStop_Obj.transform.SetParent (gameObject.transform);
+		//busStop_Obj.transform.SetParent (gameObject.transform);
 		Console.Log ("BusStop Spawned");
 		
 	}

@@ -11,12 +11,14 @@ public enum GameState
 }
 ;
 
-public delegate void CrazyModeEvent ();
+
+public delegate void GameEndEvent () ;
 
 public class GameManager : MonoBehaviour
 {
-	public static event CrazyModeEvent HideHUD;
 
+	public static event GameEndEvent OnGameEnd;
+	//public static event GameEndEvent OnGameEnd;
 	
 	//Static Singleton Instance
 	public static GameManager _Instance = null;
@@ -59,7 +61,8 @@ public class GameManager : MonoBehaviour
 	public string[] ThoughtBubbleTextArr3;
 	public string[] ThoughtBubbleTextArr4;
 
-
+	//credits
+	public GameObject Credits;
 
 	//Tutorial
 	[HideInInspector]
@@ -106,6 +109,8 @@ public class GameManager : MonoBehaviour
 	}
 
 
+
+
 	void Update ()
 	{
 		if (CurrentState == GameState.Playing) {
@@ -116,8 +121,8 @@ public class GameManager : MonoBehaviour
 			
 
 
-			if (DayChange.DayCounter >= 2) {
-				if (MissedStops == 4) {
+			if (DayChange.DayCounter >= 1) {
+				if (MissedStops == 1) {
 					if (!crazyStarted) { //Crazy GamePLay implementation triggers
 						crazyStarted = true;
 						Console.Log ("Enable Crazy gameplay");
@@ -125,19 +130,18 @@ public class GameManager : MonoBehaviour
 						iTween.AudioTo (gameObject, iTween.Hash ("name", "volUpCrazy", "audiosource", GameManager.Instance.source_CrazyBG3, "volume", 1f, "time", 1f));
 						iTween.AudioTo (gameObject, iTween.Hash ("name", "volDownCityBG", "audiosource", GameManager.Instance.source_CityBGSound, "volume", 0f, "time", 1f, "oncomplete", "stopCityBG"));
 					}
-				} else if (MissedStops == 5) {
+				} else if (MissedStops == 2) {
 					if (!crazyStarted2) { //Crazy GamePLay implementation triggers
 						crazyStarted2 = true;
 					}
-				} else if (MissedStops == 6) {
+				} else if (MissedStops == 3) {
 					if (!crazyStarted3) { //Crazy GamePLay implementation triggers
 						crazyStarted3 = true;
-						if (HideHUD != null) {
-							HideHUD ();
+						if (OnGameEnd != null) {
+							OnGameEnd ();
 						}
-
-
-						showCredits ();
+						StartCoroutine (showCredits ());
+						Console.Log ("crazyStarted3 = " + crazyStarted3);
 						DayChange.DayCounter = 1;
 						PlayerPrefs.SetInt ("DayCount", DayChange.DayCounter);
 						DayChange.ObjectiveCount = 200;
@@ -147,14 +151,12 @@ public class GameManager : MonoBehaviour
 			}
 		}
 	}
-
-	void showCredits ()
+	IEnumerator showCredits ()
 	{
-		Console.Log ("CreditsAnim");
-		if (CreditsAnim != null) {
-			CreditsAnim.SetActive (true);
-		}
+		yield return new WaitForSeconds (5f);
+		Credits.SetActive (true);
 	}
+
 
 	void stopCityBG ()
 	{
@@ -175,6 +177,12 @@ public class GameManager : MonoBehaviour
 	{
 		myPooledRoad = GameObjectPool.GetPool ("RoadPool").GetInstance ();
 		road_Obj = myPooledRoad.GetComponent<Road> ();
+		if (GameManager.Instance.crazyStarted3) {
+			if (!road_Obj.colored) {
+				road_Obj.GetComponent<Animator> ().Play ("Road_Colored");
+			}
+		} 
+
 		road_Obj.transform.position = new Vector3 (0, 9.9f, 0);
 		road_Obj.currentRoad = true;
 		road_Obj.name = "CurrentRoad";

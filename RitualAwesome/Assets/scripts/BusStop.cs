@@ -6,7 +6,6 @@ public delegate void TimerAnimationEvent () ;
 public class BusStop : MonoBehaviour
 {
 	public static event BusCollisionEvent ShowPositiveFlyingText;
-
 	public static event TimerAnimationEvent StopTimerAnimation ;
 	private float stopTimer;
 
@@ -36,42 +35,61 @@ public class BusStop : MonoBehaviour
 	// Update is called once per frame
 	void Update ()
 	{
-		if (entered) {
-			//change sprite of busstop
-			this.gameObject.GetComponent<SpriteRenderer> ().sprite = nonHighlightedStop;
-			//play clock animation
-			if (!collected) {
-				if (stopTimer <= 0) {
-					Console.Log ("CoinCollected");
-					GameManager.Instance.source_GetCoin.Play ();
+		if (GameManager.Instance.CurrentState == GameState.Playing) {
+			
+			if (GameManager.Instance.RoadSpeed > 1) {
+				transform.position -= (Vector3.up * Time.deltaTime * GameManager.Instance.RoadSpeed);
+			}
+
+			if (entered) {
+				//change sprite of busstop
+				this.gameObject.GetComponent<SpriteRenderer> ().sprite = nonHighlightedStop;
+				//play clock animation
+				if (!collected) {
+					if (stopTimer <= 0) {
+
+						GameManager.Instance.source_GetCoin.Play ();
 					
-					//flying text animation
-					if (ShowPositiveFlyingText != null) {
-						ShowPositiveFlyingText (BusStopAmount);
+						//flying text animation
+						if (ShowPositiveFlyingText != null) {
+							ShowPositiveFlyingText (BusStopAmount);
+						}
+						collected = true;
+						if (!GameManager.Instance.crazyStarted3) {
+							GameManager.Instance.crazyStarted = false;
+							GameManager.Instance.crazyStarted2 = false;
+							GameManager.Instance.MissedStops = 0;
+							GameManager.Instance.source_CityBGSound.Play ();
+							GameManager.Instance.source_CityBGSound.volume = 1;
+							
+							
+							GameManager.Instance.source_CrazyBG3.Stop ();
+							iTween.AudioTo (gameObject, iTween.Hash ("name", "volUpCityBG", "audiosource", GameManager.Instance.source_CityBGSound, "volume", 1f, "time", 1f));
+							
+						}
+					} else {
+						//play Go animation
+						stopTimer -= Time.deltaTime;
+						if (!timerSpawned) {
+							myPooledTimer = GameObjectPool.GetPool ("BusStopTimerPool").GetInstance ();
+							busStoptimer_obj = myPooledTimer.GetComponent<BusStopTimer> ();
+							timerSpawned = true;
+						}
+						StartCoroutine (busStoptimer_obj.PlayTimer ());
 					}
-					collected = true;
-				} else {
-					//play Go animation
-					stopTimer -= Time.deltaTime;
-					if (!timerSpawned) {
-						myPooledTimer = GameObjectPool.GetPool ("BusStopTimerPool").GetInstance ();
-						busStoptimer_obj = myPooledTimer.GetComponent<BusStopTimer> ();
-						timerSpawned = true;
-					}
-					StartCoroutine (busStoptimer_obj.PlayTimer ());
 				}
-			}
-		} else {
-			timerSpawned = false;
-			if (StopTimerAnimation != null) {
-				StopTimerAnimation ();
+			} else {
+				timerSpawned = false;
+				if (StopTimerAnimation != null) {
+					StopTimerAnimation ();
+				}
+
+				this.gameObject.GetComponent<SpriteRenderer> ().sprite = highlightedStop;
 			}
 
-			this.gameObject.GetComponent<SpriteRenderer> ().sprite = highlightedStop;
-		}
-
-		if (transform.position.y <= -7) {
-			RemoveBusStop ();
+			if (transform.position.y <= -7) {
+				RemoveBusStop ();
+			}
 		}
 	}
 
@@ -106,20 +124,6 @@ public class BusStop : MonoBehaviour
 
 		if (!collected) {
 			GameManager.Instance.MissedStops++;	
-		} else {
-			if (!GameManager.Instance.crazyStarted3) {
-				GameManager.Instance.crazyStarted = false;
-				GameManager.Instance.crazyStarted2 = false;
-				GameManager.Instance.MissedStops = 0;
-				GameManager.Instance.source_CityBGSound.Play ();
-				GameManager.Instance.source_CityBGSound.volume = 1;
-
-				
-				GameManager.Instance.source_CrazyBG3.Stop ();
-				iTween.AudioTo (gameObject, iTween.Hash ("name", "volUpCityBG", "audiosource", GameManager.Instance.source_CityBGSound, "volume", 1f, "time", 1f));
-
-			}
-            
 		}
 		stopTimer = 1f;
 		collected = false;

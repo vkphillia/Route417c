@@ -63,15 +63,16 @@ public class Car : MonoBehaviour
 	void OnCollisionEnter2D (Collision2D other)
 	{
 		if (other.gameObject.tag == "CarBackCol") {
-			Console.Log ("Car behind another car");
+			//Console.Log ("Car behind another car");
 			carBehindBus = true;
 			speed = other.gameObject.GetComponent<Car> ().speed;	
 		} else if (other.gameObject.tag == "BusFrontCol") {
-			Console.Log ("Bus hit car");
-			if (ShowFlyingText != null) {
-				ShowFlyingText (CarHitAmount);
+			//Console.Log ("Bus hit car");
+			if (!GameManager.Instance.crazyStarted3) {
+				if (ShowFlyingText != null) {
+					ShowFlyingText (CarHitAmount);
+				}
 			}
-			//GameManager.Instance.flyingTextAnim ();
 			GameManager.Instance.source_LoseCoin.Play ();
 			this.GetComponent<Rigidbody2D> ().AddForce ((Vector2.up + Vector2.left) * 4 * GameManager.Instance.RoadSpeed, ForceMode2D.Impulse);
 			GameManager.Instance.RoadSpeed -= 2;
@@ -82,9 +83,9 @@ public class Car : MonoBehaviour
 	void OnTriggerStay2D (Collider2D other)
 	{
 		if (other.gameObject.tag == "BusBackCol") {
-			Console.Log ("Car behind bus");
+			//Console.Log ("Car behind bus");
 			carBehindBus = true;
-			Console.Log ("carBehindBus" + carBehindBus);
+			//Console.Log ("carBehindBus" + carBehindBus);
 			
 			speed = GameManager.Instance.RoadSpeed - 1;	
 		} 
@@ -99,7 +100,7 @@ public class Car : MonoBehaviour
 	void OnTriggerExit2D (Collider2D other)
 	{
 		if (other.gameObject.tag == "BusBackCol") {
-			Console.Log ("bus has moved");
+			//Console.Log ("bus has moved");
 			carBehindBus = false;
 		} 
 	}

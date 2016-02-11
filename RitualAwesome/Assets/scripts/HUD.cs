@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 
 public class HUD : MonoBehaviour
@@ -6,7 +6,7 @@ public class HUD : MonoBehaviour
 
 	void Awake ()
 	{
-		GameManager.HideHUD += OnHideHUD;
+		GameManager.OnGameEnd += OnHideHUD;
 	}
 
 	void OnHideHUD ()
@@ -16,6 +16,6 @@ public class HUD : MonoBehaviour
 
 	void OnDestroy ()
 	{
-		GameManager.HideHUD -= OnHideHUD;
+		GameManager.OnGameEnd -= OnHideHUD;
 	}
 }
